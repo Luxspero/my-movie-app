@@ -3,6 +3,7 @@ import Home from '../screens/Home'
 import { Ionicons } from '@expo/vector-icons'
 import Favorite from '../screens/Favorite'
 import Search from '../screens/Search'
+import HomeStackNavigation from './HomeStackNavigation'
 
 const Tab = createBottomTabNavigator()
 
@@ -11,7 +12,7 @@ const BottomTabNavigation = () => {
     <Tab.Navigator>
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeStackNavigation}
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="home" color={color} size={28} />
