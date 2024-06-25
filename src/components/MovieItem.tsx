@@ -10,9 +10,14 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { FontAwesome } from '@expo/vector-icons'
 import { StackActions, useNavigation } from '@react-navigation/native'
 
-const MovieItem = ({ movie, coverType, size }: MovieItemProps) => {
+const MovieItem = ({
+  movie,
+  coverType,
+  size,
+  target,
+}: MovieItemProps & { target?: string }) => {
   const navigation = useNavigation()
-  const pushAction = StackActions.push('MovieDetail', {
+  const pushAction = StackActions.push(target ?? 'MovieDetail', {
     id: movie.id,
   })
   return (

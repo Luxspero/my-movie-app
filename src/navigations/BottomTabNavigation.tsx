@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Home from '../screens/Home'
 import { Ionicons } from '@expo/vector-icons'
-import Favorite from '../screens/Favorite'
 import Search from '../screens/Search'
 import HomeStackNavigation from './HomeStackNavigation'
+import FavoriteStackNavigation from './FavoriteStackNavigation'
 
 const Tab = createBottomTabNavigator()
 
@@ -32,12 +32,12 @@ const BottomTabNavigation = () => {
       />
       <Tab.Screen
         name="Favorite"
-        component={Favorite}
+        component={FavoriteStackNavigation}
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="heart" color={color} size={28} />
           ),
-          headerShown: true,
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

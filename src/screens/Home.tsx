@@ -25,7 +25,7 @@ const MovieLists: MovieListProps[] = [
   },
 ]
 
-const Home = ({ navigation }: any) => {
+const Home = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
