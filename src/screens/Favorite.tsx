@@ -84,7 +84,6 @@ const Favorite = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: StatusBar.currentHeight ?? 32,
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',

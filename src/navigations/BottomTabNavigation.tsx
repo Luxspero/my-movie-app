@@ -37,7 +37,7 @@ const BottomTabNavigation = () => {
           tabBarIcon: ({ color }) => (
             <Ionicons name="heart" color={color} size={28} />
           ),
-          headerShown: false,
+          headerShown: true,
         }}
       />
     </Tab.Navigator>

@@ -70,7 +70,6 @@ const MovieDetail = ({ route }: { route: any }) => {
           JSON.stringify(updatedFavorites),
         )
         setIsFavorite(false)
-        console.log(updatedFavorites)
         Alert.alert('Removed from Favorites')
       } else {
         // Add to favorites
@@ -80,7 +79,6 @@ const MovieDetail = ({ route }: { route: any }) => {
           JSON.stringify(favoriteMovies),
         )
         setIsFavorite(true)
-        console.log(favoriteMovies)
         Alert.alert('Added to Favorites')
       }
     } catch (error) {
