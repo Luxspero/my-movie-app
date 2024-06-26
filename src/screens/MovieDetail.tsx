@@ -2,7 +2,7 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
+  ImageBackground,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -12,11 +12,22 @@ import { API_ACCESS_TOKEN, API_URL } from '@env'
 import { FontAwesome } from '@expo/vector-icons'
 import * as SecureStore from 'expo-secure-store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { LinearGradient } from 'expo-linear-gradient'
+import { MovieListProps } from '../types/app'
+import MovieList from '../components/movies/MovieList'
 
 const MovieDetail = ({ route }: { route: any }) => {
   const { id } = route.params
   const [movie, setMovie] = useState<any>(null)
   const [isFavorite, setIsFavorite] = useState(false)
+
+  const MovieLists: MovieListProps[] = [
+    {
+      title: 'Recommended Movies',
+      path: `movie/${id}/recommendations?language=en-US&page=1`,
+      coverType: 'poster',
+    },
+  ]
 
   useEffect(() => {
     checkIfFavorite()
@@ -96,42 +107,62 @@ const MovieDetail = ({ route }: { route: any }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
-          }}
-          style={styles.poster}
-        />
-        <View style={styles.details}>
+      <ImageBackground
+        source={{
+          uri: `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`,
+        }}
+        style={styles.backdrop}
+        imageStyle={styles.backdropImage}
+      >
+        <LinearGradient
+          colors={['#00000000', 'rgba(0,0,0,0.7)']}
+          style={styles.backdropOverlay}
+        >
           <Text style={styles.title}>{movie.title}</Text>
-          <View style={styles.ratingContainer}>
-            <FontAwesome name="star" size={18} color="yellow" />
-            <Text style={styles.ratingStyle}>{movie.vote_average}</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.favoriteButton}
-            onPress={handleFavorite}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingLeft: 10,
+              paddingRight: 10,
+            }}
           >
-            <FontAwesome
-              name={isFavorite ? 'heart' : 'heart-o'}
-              size={24}
-              color="red"
-            />
-            <Text style={styles.favoriteText}>
-              {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-            </Text>
-          </TouchableOpacity>
+            <View style={styles.ratingContainer}>
+              <FontAwesome name="star" size={18} color="yellow" />
+              <Text style={styles.ratingStyle}>
+                {movie.vote_average.toFixed(1)}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={handleFavorite}
+            >
+              <FontAwesome
+                name={isFavorite ? 'heart' : 'heart-o'}
+                size={28}
+                color="red"
+              />
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </ImageBackground>
+      <View style={styles.details}>
+        <Text style={styles.overview}>{movie.overview}</Text>
+        <View style={styles.additionalDetails}>
+          <Text style={styles.detail}>Release Date: {movie.release_date}</Text>
+          <Text style={styles.detail}>Runtime: {movie.runtime} minutes</Text>
         </View>
       </View>
-      <View style={styles.additionalDetails}>
-        <Text style={styles.overview}>{movie.overview}</Text>
-        <Text style={styles.detail}>Release Date: {movie.release_date}</Text>
-        <Text style={styles.detail}>Runtime: {movie.runtime} minutes</Text>
-      </View>
-      <View>
-        <Text>{movie.id}</Text>
+
+      <View style={styles.containerListRecommended}>
+        {MovieLists.map((movie, index) => (
+          <MovieList
+            title={movie.title}
+            path={movie.path}
+            coverType={movie.coverType}
+            key={index}
+          />
+        ))}
       </View>
     </ScrollView>
   )
@@ -139,25 +170,27 @@ const MovieDetail = ({ route }: { route: any }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     backgroundColor: '#fff',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  backdrop: {
+    width: '100%',
+    height: 250,
+    justifyContent: 'flex-end',
   },
-  poster: {
-    width: 100,
-    height: 180,
-    borderRadius: 10,
-    marginRight: 20,
+  backdropImage: {
+    resizeMode: 'cover',
+  },
+  backdropOverlay: {
+    padding: 10,
+    justifyContent: 'flex-end',
   },
   details: {
-    flex: 1,
+    padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'white',
     marginBottom: 10,
   },
   overview: {
@@ -180,7 +213,7 @@ const styles = StyleSheet.create({
   },
   ratingStyle: {
     paddingLeft: 5,
-    color: 'black',
+    color: 'yellow',
     fontWeight: 'bold',
   },
   favoriteButton: {
@@ -192,6 +225,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 16,
     color: 'red',
+  },
+  containerListRecommended: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 16,
   },
 })
 
