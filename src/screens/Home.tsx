@@ -1,6 +1,6 @@
 import { ScrollView, StatusBar, StyleSheet, View } from 'react-native'
 import { MovieListProps } from '../types/app'
-import MovieList from '../components/MovieList'
+import MovieList from '../components/movies/MovieList'
 
 const MovieLists: MovieListProps[] = [
   {

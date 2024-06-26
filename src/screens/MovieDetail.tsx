@@ -130,6 +130,9 @@ const MovieDetail = ({ route }: { route: any }) => {
         <Text style={styles.detail}>Release Date: {movie.release_date}</Text>
         <Text style={styles.detail}>Runtime: {movie.runtime} minutes</Text>
       </View>
+      <View>
+        <Text>{movie.id}</Text>
+      </View>
     </ScrollView>
   )
 }
@@ -164,6 +167,8 @@ const styles = StyleSheet.create({
   },
   additionalDetails: {
     marginTop: 20,
+    marginBottom: 20,
+    paddingBottom: 10,
   },
   detail: {
     fontSize: 16,

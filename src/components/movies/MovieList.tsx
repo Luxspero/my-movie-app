@@ -1,5 +1,5 @@
 import { View, Text, FlatList, StyleSheet } from 'react-native'
-import { Movie, MovieListProps } from '../types/app'
+import { Movie, MovieListProps } from '../../types/app'
 import { useEffect, useState } from 'react'
 import { API_ACCESS_TOKEN, API_URL } from '@env'
 import MovieItem from './MovieItem'

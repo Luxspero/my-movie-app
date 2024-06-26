@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { FlatList, Pressable, Text, View } from 'react-native'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Movie } from '../types/app'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import MovieItem from '../components/MovieItem'
+import MovieItem from '../components/movies/MovieItem'
 
 const Favorite = () => {
   const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([])
@@ -23,14 +23,14 @@ const Favorite = () => {
     }
   }
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         style={{
           marginTop: 20,
           paddingLeft: 10,
         }}
-        columnWrapperStyle={{ justifyContent: 'space-evenly', padding: 10 }}
-        numColumns={2}
+        numColumns={3} // Mengatur jumlah kolom
+        columnWrapperStyle={styles.columnWrapper} // Menambahkan gaya wrapper kolom
         data={favoriteMovies}
         renderItem={({ item }) => (
           <MovieItem
@@ -45,5 +45,15 @@ const Favorite = () => {
     </View>
   )
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between', // Menambahkan spasi antara kolom
+    marginBottom: 20, // Menambahkan jarak bawah antar baris
+  },
+})
 
 export default Favorite

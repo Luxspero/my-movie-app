@@ -5,7 +5,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import { MovieItemProps } from '../types/app'
+import { MovieItemProps } from '../../types/app'
 import { LinearGradient } from 'expo-linear-gradient'
 import { FontAwesome } from '@expo/vector-icons'
 import { StackActions, useNavigation } from '@react-navigation/native'

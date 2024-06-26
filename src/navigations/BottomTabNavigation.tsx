@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Search from '../screens/Search'
 import HomeStackNavigation from './HomeStackNavigation'
 import FavoriteStackNavigation from './FavoriteStackNavigation'
+import SearchStackNavigation from './SearchStackNavigation'
 
 const Tab = createBottomTabNavigator()
 
@@ -22,7 +23,7 @@ const BottomTabNavigation = () => {
       />
       <Tab.Screen
         name="Search"
-        component={Search}
+        component={SearchStackNavigation}
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="search" color={color} size={28} />

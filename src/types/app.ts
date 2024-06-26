@@ -26,3 +26,15 @@ export interface Movie {
   vote_average: number
   vote_count: number
 }
+
+export interface SearchProps {
+  page: number
+  results: SearchResult
+  total_pages: number
+  total_results: number
+}
+
+export interface SearchResult {
+  id: number
+  name: string
+}
