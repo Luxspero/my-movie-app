@@ -20,6 +20,9 @@ const MovieItem = ({
   const pushAction = StackActions.push(target ?? 'MovieDetail', {
     id: movie.id,
   })
+
+  const releaseYear = new Date(movie.release_date).getFullYear()
+
   return (
     <View>
       <Pressable onPress={() => navigation.dispatch(pushAction)}>
@@ -41,6 +44,7 @@ const MovieItem = ({
             <View style={styles.ratingContainer}>
               <FontAwesome name="star" size={12} color="yellow" />
               <Text style={styles.rating}>{movie.vote_average.toFixed(1)}</Text>
+              <Text style={styles.releaseYear}>{releaseYear}</Text>
             </View>
           </LinearGradient>
         </ImageBackground>
@@ -75,6 +79,10 @@ const styles = StyleSheet.create({
   rating: {
     color: 'yellow',
     fontWeight: 'bold',
+  },
+  releaseYear: {
+    color: 'white',
+    marginLeft: 6, // Menambahkan jarak antara rating dan tahun rilis
   },
 })
 

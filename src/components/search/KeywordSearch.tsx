@@ -2,20 +2,32 @@ import { API_ACCESS_TOKEN, API_URL } from '@env'
 import { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native'
 import { useDebounce } from 'use-debounce'
-import { Movie, SearchResult } from '../../types/app'
+import { Movie } from '../../types/app'
 import MovieItem from '../movies/MovieItem'
 
 const KeywordSearch = () => {
   const [inputSearch, setInputSearch] = useState<string>('')
-  const [Keyword, setKeyword] = useDebounce(inputSearch, 2000)
+  const [Keyword] = useDebounce(inputSearch, 1000)
   const [MovieList, setMovieList] = useState<Movie[]>([])
+  const [page, setPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [totalResults, setTotalResults] = useState<number>(0) // State untuk total results
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
-    getMovie()
+    if (Keyword) {
+      setMovieList([])
+      setPage(1)
+      getMovie(1)
+    } else {
+      setMovieList([])
+    }
   }, [Keyword])
 
-  const getMovie = async () => {
-    const url = `${API_URL}search/movie?query=${Keyword}`
+  const getMovie = async (page: number) => {
+    if (loading || !Keyword) return
+    setLoading(true)
+    const url = `${API_URL}search/movie?query=${Keyword}&page=${page}&sort_by=popularity.desc`
     const options = {
       method: 'GET',
       headers: {
@@ -26,9 +38,21 @@ const KeywordSearch = () => {
     try {
       const response = await fetch(url, options)
       const data = await response.json()
-      setMovieList(data.results)
+      setMovieList((prev) => [...prev, ...data.results])
+      setTotalResults(data.total_results)
+      setTotalPages(data.total_pages)
     } catch (error) {
       console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (page < totalPages && !loading) {
+      const nextPage = page + 1
+      setPage(nextPage)
+      getMovie(nextPage)
     }
   }
 
@@ -37,10 +61,11 @@ const KeywordSearch = () => {
       <TextInput
         style={styles.input}
         placeholder="Search"
-        onChange={(e) => setInputSearch(e.nativeEvent.text)}
+        value={inputSearch}
+        onChangeText={(text) => setInputSearch(text)}
       />
 
-      <Text>Result : {MovieList.length}</Text>
+      <Text>Result : {totalResults}</Text>
       <View style={styles.resultContainer}>
         <FlatList
           style={{
@@ -62,6 +87,9 @@ const KeywordSearch = () => {
             />
           )}
           keyExtractor={(item) => item.id.toString()}
+          onEndReached={handleLoadMore} // Memanggil fungsi handleLoadMore saat mencapai akhir daftar
+          onEndReachedThreshold={0.5} // Threshold saat onEndReached dipanggil
+          ListFooterComponent={loading ? <Text>Loading...</Text> : null} // Menambahkan indikator loading di footer
         />
       </View>
     </View>

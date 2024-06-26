@@ -1,16 +1,54 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList, Image, StyleSheet } from 'react-native'
+import { View, Text, FlatList, StyleSheet } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import { API_ACCESS_TOKEN, API_URL } from '@env'
+import { Movie } from '../../types/app'
+import MovieItem from '../movies/MovieItem'
 
 const CategorySearch = () => {
-  const [selectedCategory, setSelectedCategory] = useState<
+  const [selectedCategory, setSelectedCategory] = useState<number>(0)
+  const [listCategory, setListCategory] = useState<
     { id: number; name: string }[]
   >([])
+  const [movieList, setMovieList] = useState<Movie[]>([])
+  const [page, setPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     getCategory()
   }, [])
+
+  useEffect(() => {
+    if (selectedCategory !== 0) {
+      setMovieList([])
+      setPage(1)
+      getMovie(1)
+    }
+  }, [selectedCategory])
+
+  const getMovie = async (page: number) => {
+    if (loading) return
+    setLoading(true)
+    const url = `${API_URL}discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc&with_genres=${selectedCategory}`
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${API_ACCESS_TOKEN}`,
+      },
+    }
+    try {
+      const response = await fetch(url, options)
+      const data = await response.json()
+      setMovieList((prev) => [...prev, ...data.results])
+      setTotalPages(data.total_pages)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const getCategory = async () => {
     const url = `${API_URL}genre/movie/list?language=en`
@@ -24,11 +62,20 @@ const CategorySearch = () => {
     try {
       const response = await fetch(url, options)
       const data = await response.json()
-      setSelectedCategory(data.genres)
+      setListCategory(data.genres)
     } catch (error) {
       console.error(error)
     }
   }
+
+  const handleLoadMore = () => {
+    if (page < totalPages) {
+      const nextPage = page + 1
+      setPage(nextPage)
+      getMovie(nextPage)
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -39,12 +86,41 @@ const CategorySearch = () => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
           >
-            {selectedCategory.map((item) => (
+            <Picker.Item key={0} label="Select Category..." value={0} />
+            {listCategory.map((item) => (
               <Picker.Item key={item.id} label={item.name} value={item.id} />
             ))}
           </Picker>
         </View>
-        <View style={styles.cardBody}></View>
+        <View style={styles.cardBody}>
+          {selectedCategory === 0 ? (
+            <Text>No category selected</Text>
+          ) : (
+            <View style={styles.container}>
+              <FlatList
+                style={{
+                  marginTop: 20,
+                  paddingLeft: 10,
+                }}
+                numColumns={3} // Mengatur jumlah kolom
+                columnWrapperStyle={styles.columnWrapper} // Menambahkan gaya wrapper kolom
+                data={movieList}
+                renderItem={({ item }) => (
+                  <MovieItem
+                    movie={item}
+                    coverType={'poster'}
+                    size={{ width: 100, height: 160 }}
+                    target={'MovieDetailSearch'}
+                  />
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                onEndReached={handleLoadMore} // Memanggil fungsi handleLoadMore saat mencapai akhir daftar
+                onEndReachedThreshold={0.5} // Threshold saat onEndReached dipanggil
+                ListFooterComponent={loading ? <Text>Loading...</Text> : null} // Menambahkan indikator loading di footer
+              />
+            </View>
+          )}
+        </View>
       </View>
     </View>
   )
@@ -85,20 +161,12 @@ const styles = StyleSheet.create({
     width: 150,
   },
   cardBody: {
-    flexDirection: 'row',
+    minHeight: 500,
+    flexDirection: 'column',
   },
-  movieItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  moviePoster: {
-    width: 50,
-    height: 75,
-    marginRight: 10,
-  },
-  movieTitle: {
-    fontSize: 16,
+  columnWrapper: {
+    justifyContent: 'space-between', // Menambahkan spasi antara kolom
+    marginBottom: 20, // Menambahkan jarak bawah antar baris
   },
 })
 
